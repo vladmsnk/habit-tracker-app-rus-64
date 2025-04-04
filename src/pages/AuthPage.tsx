@@ -32,10 +32,10 @@ const AuthPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-primary/10 to-background px-4">
-      <div className="max-w-md w-full space-y-8 mb-8">
+    <div className="min-h-screen flex flex-col justify-center items-center auth-gradient px-4">
+      <div className="max-w-md w-full space-y-8 mb-8 animate-fade-in">
         <div className="text-center">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             TrackHabits
           </h1>
           <p className="text-muted-foreground mb-8">

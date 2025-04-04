@@ -4,11 +4,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { habitService, timeService, mockData } from "@/services/api";
 import { CreateHabitRequest, Habit, HabitListResponse, UpdateHabitRequest } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Plus, RefreshCw, Loader2 } from "lucide-react";
+import { Plus, RefreshCw, Loader2, Clock } from "lucide-react";
 import HabitCard from "@/components/habits/HabitCard";
 import CreateHabitForm from "@/components/habits/CreateHabitForm";
 import AlertConfirmation from "@/components/ui/alert-confirmation";
 import { useToast } from "@/components/ui/use-toast";
+import { Card } from "@/components/ui/card";
 
 const HomePage: React.FC = () => {
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -187,36 +188,43 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Мои привычки</h1>
-          <p className="text-muted-foreground mt-1">
-            Управляйте своими привычками и отслеживайте прогресс
-          </p>
-          {currentTime && (
-            <p className="text-sm text-muted-foreground mt-1">
-              Текущее время системы: {timeLoading ? "Загрузка..." : currentTime}
+    <div className="space-y-6 animate-fade-in">
+      <div className="card-gradient-primary p-6 rounded-lg shadow-lg mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-gradient">Мои привычки</h1>
+            <p className="text-muted-foreground mt-1">
+              Управляйте своими привычками и отслеживайте прогресс
             </p>
-          )}
-        </div>
-        <div className="flex gap-2 self-end sm:self-auto">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              fetchHabits();
-              fetchCurrentTime();
-            }}
-            disabled={loading || timeLoading}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading || timeLoading ? 'animate-spin' : ''}`} />
-            Обновить
-          </Button>
-          <Button onClick={() => setCreateDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Добавить привычку
-          </Button>
+            {currentTime && (
+              <div className="flex items-center text-sm text-primary mt-2">
+                <Clock className="h-4 w-4 mr-1" />
+                {timeLoading ? "Загрузка..." : currentTime}
+              </div>
+            )}
+          </div>
+          <div className="flex gap-2 self-end sm:self-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                fetchHabits();
+                fetchCurrentTime();
+              }}
+              disabled={loading || timeLoading}
+              className="glass-card border-primary/20"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading || timeLoading ? 'animate-spin' : ''}`} />
+              Обновить
+            </Button>
+            <Button 
+              onClick={() => setCreateDialogOpen(true)} 
+              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Добавить привычку
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -224,7 +232,7 @@ const HomePage: React.FC = () => {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="border rounded-lg p-6 space-y-4">
+            <Card key={i} className="border p-6 space-y-4 card-gradient-primary">
               <div className="h-6 bg-muted rounded animate-pulse w-3/4"></div>
               <div className="h-4 bg-muted rounded animate-pulse w-1/2"></div>
               <div className="h-2 bg-muted rounded animate-pulse w-full mt-4"></div>
@@ -232,23 +240,23 @@ const HomePage: React.FC = () => {
                 <div className="h-9 bg-muted rounded animate-pulse w-20"></div>
                 <div className="h-9 bg-muted rounded animate-pulse w-20"></div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       ) : habits.length === 0 ? (
-        <div className="border rounded-lg p-8 mt-8 text-center">
+        <Card className="card-gradient-secondary p-8 mt-8 text-center rounded-lg">
           <h3 className="text-lg font-medium">У вас пока нет привычек</h3>
           <p className="text-muted-foreground mt-2">
             Создайте свою первую привычку, чтобы начать отслеживать прогресс
           </p>
           <Button 
             onClick={() => setCreateDialogOpen(true)} 
-            className="mt-4"
+            className="mt-4 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
           >
             <Plus className="h-4 w-4 mr-2" />
             Добавить привычку
           </Button>
-        </div>
+        </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
           {habits.map((habit) => (

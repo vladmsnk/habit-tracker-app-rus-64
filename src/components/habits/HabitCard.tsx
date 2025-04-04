@@ -123,10 +123,10 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onAddPro
     );
 
     return (
-      <div className="space-y-2">
+      <div className="space-y-3">
         <div className="flex justify-between items-center">
           <span className="text-sm font-medium">Прогресс</span>
-          <span className="text-sm">{completionPercentage}%</span>
+          <span className="text-sm font-bold">{completionPercentage}%</span>
         </div>
         <div className="progress-bar">
           <div 
@@ -134,12 +134,12 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onAddPro
             style={{ width: `${completionPercentage}%` }}
           ></div>
         </div>
-        <div className="flex justify-between text-xs text-muted-foreground">
+        <div className="flex justify-between text-xs text-muted-foreground mt-1">
           <span>{total_completed_periods} из {totalTrackingPeriods} периодов</span>
           {progress.current_streak > 0 && (
-            <Badge variant="outline" className="flex items-center gap-1">
-              <Trophy className="h-3 w-3" />
-              Серия: {progress.current_streak}
+            <Badge variant="outline" className="flex items-center gap-1 bg-primary/10">
+              <Trophy className="h-3 w-3 text-primary" />
+              <span className="font-medium">Серия: {progress.current_streak}</span>
             </Badge>
           )}
         </div>
@@ -149,13 +149,13 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onAddPro
 
   return (
     <>
-      <Card className="overflow-hidden">
+      <Card className="habit-card card-gradient-primary">
         <CardHeader className="pb-2">
           <div className="flex justify-between items-start">
             <CardTitle className="text-xl truncate" title={habit.description}>
               {habit.description}
             </CardTitle>
-            <Badge variant="outline" className="flex items-center gap-1">
+            <Badge variant="secondary" className="flex items-center gap-1 animate-fade-in">
               <Calendar className="h-3 w-3" />
               {formatFrequencyType(habit.goal.frequency_type)}
             </Badge>
@@ -165,7 +165,7 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onAddPro
           </p>
         </CardHeader>
         <CardContent className="pb-2">{renderProgress()}</CardContent>
-        <CardFooter className="flex justify-between pt-2">
+        <CardFooter className="flex flex-wrap gap-2 pt-2 justify-between">
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={() => onEdit(habit)}>
               <Edit className="h-4 w-4 mr-1" />
@@ -181,7 +181,11 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onAddPro
               <BarChart3 className="h-4 w-4 mr-1" />
               Детали
             </Button>
-            <Button size="sm" onClick={handleAddProgress}>
+            <Button 
+              size="sm" 
+              onClick={handleAddProgress}
+              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+            >
               <CheckCircle className="h-4 w-4 mr-1" />
               Отметить
             </Button>
@@ -190,9 +194,9 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onAddPro
       </Card>
 
       <Dialog open={showProgressDialog} onOpenChange={setShowProgressDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md glass-card">
           <DialogHeader>
-            <DialogTitle>Детали прогресса</DialogTitle>
+            <DialogTitle className="text-xl">Детали прогресса</DialogTitle>
             <DialogDescription>
               Подробная статистика вашего прогресса по привычке "{habit.description}"
             </DialogDescription>
@@ -201,30 +205,33 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onAddPro
           {progress ? (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-muted rounded-lg p-3">
+                <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
                   <p className="text-xs text-muted-foreground">Всего выполнено периодов</p>
-                  <p className="text-2xl font-bold">{progress.total_completed_periods}</p>
+                  <p className="text-2xl font-bold text-primary">{progress.total_completed_periods}</p>
                   <p className="text-xs text-muted-foreground">из {habit.goal.total_tracking_periods}</p>
                 </div>
-                <div className="bg-muted rounded-lg p-3">
+                <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
                   <p className="text-xs text-muted-foreground">Текущая серия</p>
-                  <p className="text-2xl font-bold">{progress.current_streak}</p>
+                  <p className="text-2xl font-bold text-primary">{progress.current_streak}</p>
                   <p className="text-xs text-muted-foreground">периодов подряд</p>
                 </div>
-                <div className="bg-muted rounded-lg p-3">
+                <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
                   <p className="text-xs text-muted-foreground">Лучшая серия</p>
-                  <p className="text-2xl font-bold">{progress.most_longest_streak}</p>
+                  <p className="text-2xl font-bold text-primary">{progress.most_longest_streak}</p>
                   <p className="text-xs text-muted-foreground">периодов подряд</p>
                 </div>
-                <div className="bg-muted rounded-lg p-3">
+                <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
                   <p className="text-xs text-muted-foreground">Пропущено периодов</p>
-                  <p className="text-2xl font-bold">{progress.total_skipped_periods}</p>
+                  <p className="text-2xl font-bold text-primary">{progress.total_skipped_periods}</p>
                   <p className="text-xs text-muted-foreground">всего</p>
                 </div>
               </div>
               
               <div className="pt-2">
-                <Button className="w-full" onClick={handleAddProgress}>
+                <Button 
+                  className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                  onClick={handleAddProgress}
+                >
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Отметить прогресс
                 </Button>

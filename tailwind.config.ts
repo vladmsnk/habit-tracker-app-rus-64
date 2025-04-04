@@ -67,7 +67,7 @@ export default {
 					DEFAULT: '#6366f1',
 					foreground: '#ffffff',
 					hover: '#4f46e5',
-					completed: '#22c55e',
+					completed: 'hsl(var(--habit-completed))',
 					progress: '#3b82f6',
 					skipped: '#ef4444'
 				}
@@ -113,13 +113,26 @@ export default {
 						opacity: '1',
 						transform: 'translateX(0)'
 					}
+				},
+				'pulse-scale': {
+					'0%, 100%': {
+						transform: 'scale(1)'
+					},
+					'50%': {
+						transform: 'scale(1.05)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.3s ease-out',
-				'slide-in': 'slide-in 0.3s ease-out'
+				'slide-in': 'slide-in 0.3s ease-out',
+				'pulse-scale': 'pulse-scale 2s ease-in-out infinite'
+			},
+			backgroundImage: {
+				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+				'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
 			}
 		}
 	},
