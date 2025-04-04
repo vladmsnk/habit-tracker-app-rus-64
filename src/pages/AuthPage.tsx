@@ -32,28 +32,30 @@ const AuthPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center auth-gradient px-4">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-white to-blue-50 px-4">
       <div className="max-w-md w-full space-y-8 mb-8 animate-fade-in">
         <div className="text-center">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2 bg-gradient-to-r from-primary to-violet-400 bg-clip-text text-transparent">
             TrackHabits
           </h1>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-slate-600 mb-8">
             Формируйте полезные привычки и отслеживайте свой прогресс
           </p>
         </div>
 
         {/* Форма авторизации или регистрации */}
-        {showRegister ? (
-          <RegisterForm onSwitchToLogin={() => setShowRegister(false)} />
-        ) : (
-          <LoginForm onSwitchToRegister={() => setShowRegister(true)} />
-        )}
+        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+          {showRegister ? (
+            <RegisterForm onSwitchToLogin={() => setShowRegister(false)} />
+          ) : (
+            <LoginForm onSwitchToRegister={() => setShowRegister(true)} />
+          )}
+        </div>
       </div>
 
       {/* Версия API */}
       {version && (
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-slate-500">
           Версия API: {version}
         </div>
       )}

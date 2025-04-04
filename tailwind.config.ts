@@ -133,6 +133,11 @@ export default {
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 				'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+				'light-gradient': 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+				'pastel-gradient': 'linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)',
+				'soft-blue-gradient': 'linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%)',
+				'soft-green-gradient': 'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)',
+				'soft-pink-gradient': 'linear-gradient(120deg, #f6d365 0%, #fda085 100%)',
 			}
 		}
 	},
