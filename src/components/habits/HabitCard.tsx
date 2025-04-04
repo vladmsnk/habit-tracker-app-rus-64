@@ -115,9 +115,10 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onAddPro
       return <p className="text-sm text-muted-foreground">Данные о прогрессе недоступны</p>;
     }
 
-    const { total_completed_periods, total_tracking_periods } = progress;
+    const { total_completed_periods } = progress;
+    const totalTrackingPeriods = habit.goal.total_tracking_periods;
     const completionPercentage = Math.min(
-      Math.round((total_completed_periods / habit.goal.total_tracking_periods) * 100),
+      Math.round((total_completed_periods / totalTrackingPeriods) * 100),
       100
     );
 
@@ -134,7 +135,7 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onAddPro
           ></div>
         </div>
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>{total_completed_periods} из {habit.goal.total_tracking_periods} периодов</span>
+          <span>{total_completed_periods} из {totalTrackingPeriods} периодов</span>
           {progress.current_streak > 0 && (
             <Badge variant="outline" className="flex items-center gap-1">
               <Trophy className="h-3 w-3" />

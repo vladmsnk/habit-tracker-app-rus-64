@@ -63,6 +63,7 @@ export interface Progress {
   total_skipped_periods: number;
   most_longest_streak: number;
   current_streak: number;
+  total_tracking_periods?: number; // Добавлено для совместимости с существующим кодом
 }
 
 // Тип для версии API

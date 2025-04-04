@@ -4,13 +4,13 @@ import { authService } from "@/services/api";
 import { AuthContextType, AuthState } from "@/types";
 import { useToast } from "@/components/ui/use-toast";
 
-// Начальное состояние аутентификации
+// Начальное состояние аутентификации для режима с моками
 const initialAuthState: AuthState = {
-  isAuthenticated: false,
-  user: null,
+  isAuthenticated: true, // Всегда авторизованы для тестирования
+  user: "Пользователь",
   loading: false,
-  accessToken: null,
-  refreshToken: null,
+  accessToken: "mock_token_123",
+  refreshToken: "mock_refresh_token_123",
 };
 
 // Создание контекста
@@ -18,42 +18,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Провайдер контекста
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [auth, setAuth] = useState<AuthState>(() => {
-    // Попытка извлечь данные аутентификации из localStorage
-    const storedAuth = localStorage.getItem("auth");
-    if (storedAuth) {
-      try {
-        const parsedAuth = JSON.parse(storedAuth);
-        return {
-          ...initialAuthState,
-          ...parsedAuth,
-          isAuthenticated: !!parsedAuth.accessToken,
-        };
-      } catch (error) {
-        console.error("Ошибка при чтении данных аутентификации:", error);
-        return initialAuthState;
-      }
-    }
-    return initialAuthState;
-  });
-
+  const [auth, setAuth] = useState<AuthState>(initialAuthState);
   const { toast } = useToast();
-
-  // Сохранение данных аутентификации в localStorage
-  useEffect(() => {
-    if (auth.accessToken) {
-      localStorage.setItem(
-        "auth",
-        JSON.stringify({
-          accessToken: auth.accessToken,
-          refreshToken: auth.refreshToken,
-          user: auth.user,
-        })
-      );
-    } else {
-      localStorage.removeItem("auth");
-    }
-  }, [auth.accessToken, auth.refreshToken, auth.user]);
 
   // Авторизация пользователя
   const login = async (username: string, password: string) => {
@@ -113,13 +79,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error("Ошибка при выходе:", error);
     } finally {
-      setAuth({
-        isAuthenticated: false,
-        user: null,
-        loading: false,
-        accessToken: null,
-        refreshToken: null,
-      });
+      // Для демонстрации - возвращаемся в авторизованное состояние через 1 секунду
+      setTimeout(() => {
+        setAuth(initialAuthState);
+        toast({
+          title: "Демо-режим",
+          description: "В демо-режиме вы автоматически авторизованы.",
+        });
+      }, 1000);
+      
       toast({
         title: "Выход из системы",
         description: "Вы успешно вышли из системы.",
@@ -146,16 +114,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return true;
     } catch (error) {
       console.error("Ошибка при обновлении токена:", error);
-      setAuth({
-        isAuthenticated: false,
-        user: null,
+      // В демо-режиме не выходим из системы при ошибке обновления токена
+      setAuth((prev) => ({
+        ...prev,
         loading: false,
-        accessToken: null,
-        refreshToken: null,
-      });
+      }));
       toast({
-        title: "Сеанс истек",
-        description: "Пожалуйста, войдите снова.",
+        title: "Ошибка обновления сессии",
+        description: "Используется демо-режим.",
         variant: "destructive",
       });
       return false;

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import AppHeader from "@/components/layout/AppHeader";
@@ -7,6 +7,9 @@ import { Loader2 } from "lucide-react";
 
 const AppLayout: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
+
+  // В демо-режиме пользователь всегда авторизован, но оставляем код для полноты
+  // функциональности
 
   // Если загрузка, показываем индикатор
   if (loading) {
@@ -34,7 +37,7 @@ const AppLayout: React.FC = () => {
       </main>
       <footer className="border-t py-4 text-center text-sm text-muted-foreground">
         <div className="container mx-auto px-4">
-          TrackHabits &copy; 2025
+          TrackHabits &copy; 2025 - Демо-режим
         </div>
       </footer>
     </div>
