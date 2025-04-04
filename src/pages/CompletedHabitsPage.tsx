@@ -94,7 +94,7 @@ const CompletedHabitsPage: React.FC = () => {
         </div>
       </CardContent>
       <CardFooter className="pt-2 flex justify-end">
-        <Button variant="outline" size="sm" disabled className="glass-card border-habit-completed/20">
+        <Button variant="outline" size="sm" disabled className="glass-card border-habit-completed/20 w-full sm:w-auto">
           <CalendarCheck className="h-4 w-4 mr-2 text-habit-completed" />
           Завершена
         </Button>
