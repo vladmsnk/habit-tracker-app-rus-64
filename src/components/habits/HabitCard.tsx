@@ -8,7 +8,7 @@ import { CheckCircle, Edit, Trash2, Trophy, Calendar, BarChart3 } from "lucide-r
 import { habitService, mockData } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface HabitCardProps {
@@ -177,12 +177,10 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onAddPro
             </Button>
           </div>
           <div className="flex gap-2">
-            <DialogTrigger asChild onClick={() => setShowProgressDialog(true)}>
-              <Button size="sm" variant="outline">
-                <BarChart3 className="h-4 w-4 mr-1" />
-                Детали
-              </Button>
-            </DialogTrigger>
+            <Button size="sm" variant="outline" onClick={() => setShowProgressDialog(true)}>
+              <BarChart3 className="h-4 w-4 mr-1" />
+              Детали
+            </Button>
             <Button size="sm" onClick={handleAddProgress}>
               <CheckCircle className="h-4 w-4 mr-1" />
               Отметить
