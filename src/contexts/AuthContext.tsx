@@ -1,10 +1,10 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { authService } from "@/services/api";
+import { authService } from "@/services";
 import { AuthContextType, AuthState } from "@/types";
 import { useToast } from "@/components/ui/use-toast";
 
-// Начальное состояние аутентификации
+// Initial authentication state
 const initialAuthState: AuthState = {
   isAuthenticated: false,
   user: null,
@@ -13,20 +13,20 @@ const initialAuthState: AuthState = {
   refreshToken: null,
 };
 
-// Создание контекста
+// Create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Провайдер контекста
+// Context provider
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [auth, setAuth] = useState<AuthState>(() => {
-    // Проверяем локальное хранилище для сохраненных токенов
+    // Check local storage for saved tokens
     const savedAuth = localStorage.getItem('auth');
     if (savedAuth) {
       try {
         const parsedAuth = JSON.parse(savedAuth) as AuthState;
         return parsedAuth;
       } catch (error) {
-        console.error("Ошибка при восстановлении сессии:", error);
+        console.error("Error restoring session:", error);
       }
     }
     return initialAuthState;
@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const { toast } = useToast();
 
-  // Сохраняем состояние аутентификации в локальное хранилище
+  // Save authentication state to local storage
   useEffect(() => {
     if (auth.isAuthenticated && auth.accessToken && auth.refreshToken) {
       localStorage.setItem('auth', JSON.stringify(auth));
@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [auth]);
 
-  // Авторизация пользователя
+  // User login
   const login = async (username: string, password: string) => {
     setAuth((prev) => ({ ...prev, loading: true }));
     try {
@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Регистрация пользователя
+  // User registration
   const register = async (username: string, email: string, password: string) => {
     setAuth((prev) => ({ ...prev, loading: true }));
     try {
@@ -91,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Выход из системы
+  // Logout
   const logout = async () => {
     setAuth((prev) => ({ ...prev, loading: true }));
     try {
@@ -99,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await authService.logout({ access_token: auth.accessToken });
       }
     } catch (error) {
-      console.error("Ошибка при выходе:", error);
+      console.error("Logout error:", error);
     } finally {
       setAuth(initialAuthState);
       localStorage.removeItem('auth');
@@ -110,7 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Обновление токена
+  // Token refresh
   const refreshAuthToken = async (): Promise<boolean> => {
     if (!auth.refreshToken) return false;
 
@@ -128,8 +128,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }));
       return true;
     } catch (error) {
-      console.error("Ошибка при обновлении токена:", error);
-      // При ошибке обновления токена выходим из системы
+      console.error("Token refresh error:", error);
+      // On refresh error, log out
       setAuth(initialAuthState);
       localStorage.removeItem('auth');
       toast({
@@ -141,7 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Предоставляем значение контекста
+  // Context value
   const contextValue: AuthContextType = {
     ...auth,
     login,
@@ -155,11 +155,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// Хук для использования контекста
+// Hook for using the context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth должен использоваться внутри AuthProvider");
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };
