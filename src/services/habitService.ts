@@ -1,11 +1,10 @@
+
 import { API_BASE_URL, handleResponse } from "./apiConfig";
-import { CreateHabitRequest, UpdateHabitRequest, HabitListResponse } from "@/types";
+import { CreateHabitRequest, UpdateHabitRequest, HabitListResponse, Progress } from "@/types";
 
 export const habitService = {
   // GET /tracker/habits
-  // Согласно Swagger возвращается массив объектов habit.ListUserHabitsResponse,
-  // что соответствует типу HabitListResponse[].
-  listHabits: async (token: string): Promise<HabitListResponse[]> => {
+  listHabits: async (token: string): Promise<HabitListResponse> => {
     const response = await fetch(`${API_BASE_URL}/tracker/habits`, {
       method: "GET",
       headers: {
@@ -17,8 +16,7 @@ export const habitService = {
   },
 
   // GET /tracker/habits/completed
-  // Возвращает массив завершённых привычек.
-  listCompletedHabits: async (token: string): Promise<HabitListResponse[]> => {
+  listCompletedHabits: async (token: string): Promise<HabitListResponse> => {
     const response = await fetch(`${API_BASE_URL}/tracker/habits/completed`, {
       method: "GET",
       headers: {
@@ -30,8 +28,6 @@ export const habitService = {
   },
 
   // POST /tracker/habits
-  // Создаёт новую привычку. Принимает объект CreateHabitRequest,
-  // возвращает строку (например, сообщение об успехе).
   createHabit: async (data: CreateHabitRequest, token: string): Promise<string> => {
     const response = await fetch(`${API_BASE_URL}/tracker/habits`, {
       method: "POST",
@@ -45,7 +41,6 @@ export const habitService = {
   },
 
   // PUT /tracker/habits
-  // Обновляет привычку. Принимает объект UpdateHabitRequest, возвращает строку.
   updateHabit: async (data: UpdateHabitRequest, token: string): Promise<string> => {
     const response = await fetch(`${API_BASE_URL}/tracker/habits`, {
       method: "PUT",
@@ -59,7 +54,6 @@ export const habitService = {
   },
 
   // DELETE /tracker/habits/{habitId}
-  // Удаляет привычку по её идентификатору, возвращая строку.
   deleteHabit: async (habitId: number, token: string): Promise<string> => {
     const response = await fetch(`${API_BASE_URL}/tracker/habits/${habitId}`, {
       method: "DELETE",
@@ -72,10 +66,8 @@ export const habitService = {
   },
 
   // GET /tracker/progress/{habitId}
-  // Получает прогресс по привычке.
-  // Согласно Swagger возвращается строка, хотя в типах определён интерфейс Progress.
-  // Здесь тип возвращаемого значения оставляем string, как и в спецификации.
-  getProgress: async (habitId: number, token: string): Promise<string> => {
+  getProgress: async (habitId: number, token: string): Promise<Progress> => {
+    console.log(`Fetching progress for habit ${habitId}`);
     const response = await fetch(`${API_BASE_URL}/tracker/progress/${habitId}`, {
       method: "GET",
       headers: {
@@ -83,11 +75,12 @@ export const habitService = {
         "Content-Type": "application/json"
       }
     });
-    return handleResponse(response);
+    const data = await handleResponse(response);
+    console.log("Progress API response:", data);
+    return data;
   },
 
   // POST /tracker/progress/{habitId}
-  // Добавляет прогресс для привычки. Возвращает строку.
   addProgress: async (habitId: number, token: string): Promise<string> => {
     const response = await fetch(`${API_BASE_URL}/tracker/progress/${habitId}`, {
       method: "POST",
@@ -100,8 +93,7 @@ export const habitService = {
   },
 
   // GET /tracker/reminder
-  // Получает напоминания для пользователя. Возвращает строку.
-  getReminders: async (token: string): Promise<string> => {
+  getReminders: async (token: string): Promise<any> => {
     const response = await fetch(`${API_BASE_URL}/tracker/reminder`, {
       method: "GET",
       headers: {

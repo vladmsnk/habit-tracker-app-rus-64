@@ -25,6 +25,9 @@ const ProgressDialog: React.FC<ProgressDialogProps> = ({
   onOpenChange,
   onAddProgress
 }) => {
+  // Отладочная информация
+  console.log("Progress data in dialog:", progress);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md glass-card">

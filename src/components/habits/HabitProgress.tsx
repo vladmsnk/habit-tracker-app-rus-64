@@ -15,6 +15,9 @@ const HabitProgress: React.FC<HabitProgressProps> = ({
   loading, 
   totalTrackingPeriods 
 }) => {
+  // Отладочная информация
+  console.log("Progress data:", progress, "Total periods:", totalTrackingPeriods);
+
   if (loading) {
     return (
       <div className="space-y-2">
@@ -40,9 +43,9 @@ const HabitProgress: React.FC<HabitProgressProps> = ({
         <span className="text-sm font-medium">Прогресс</span>
         <span className="text-sm font-bold">{completionPercentage}%</span>
       </div>
-      <div className="progress-bar">
+      <div className="h-2 w-full bg-primary/10 rounded-full overflow-hidden">
         <div 
-          className="progress-value" 
+          className="h-full bg-primary rounded-full transition-all duration-300 ease-in-out" 
           style={{ width: `${completionPercentage}%` }}
         ></div>
       </div>

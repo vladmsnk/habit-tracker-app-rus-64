@@ -25,6 +25,7 @@ export const useProgress = (habitId: number) => {
       }
       
       const progressData = await habitService.getProgress(habitId, accessToken);
+      console.log("Progress data received:", progressData);
       setProgress(progressData);
     } catch (error) {
       console.error("Ошибка при получении прогресса:", error);
@@ -59,7 +60,7 @@ export const useProgress = (habitId: number) => {
         title: "Прогресс добавлен",
         description: "Вы успешно отметили прогресс по привычке.",
       });
-      fetchProgress();
+      await fetchProgress();
       return true;
     } catch (error) {
       console.error("Ошибка при добавлении прогресса:", error);
