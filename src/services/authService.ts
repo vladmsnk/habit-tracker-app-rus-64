@@ -1,6 +1,6 @@
 
 import { API_BASE_URL, handleResponse } from "./apiConfig";
-import { LoginRequest, RegisterRequest, RefreshTokenRequest, LogoutRequest } from "@/types";
+import { LoginRequest, LoginResponse, RegisterRequest, RefreshTokenRequest, LogoutRequest } from "@/types";
 
 export const authService = {
   // Register user
@@ -12,21 +12,22 @@ export const authService = {
       },
       body: JSON.stringify(data)
     });
-    
+
     return handleResponse(response);
   },
 
   // Login user
-  login: async (data: LoginRequest): Promise<{ access_token: string, refresh_token: string }> => {
+  login: async (data: LoginRequest): Promise<LoginResponse> => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
-    
-    return handleResponse(response);
+
+    // Ожидается, что сервер возвращает объект вида:
+    // { token: { access_token: string, refresh_token: string } }
+    const result = await handleResponse(response);
+    return result.token;
   },
 
   // Refresh token
@@ -38,7 +39,7 @@ export const authService = {
       },
       body: JSON.stringify(data)
     });
-    
+
     return handleResponse(response);
   },
 
@@ -51,7 +52,7 @@ export const authService = {
       },
       body: JSON.stringify(data)
     });
-    
+
     return handleResponse(response);
   },
 };

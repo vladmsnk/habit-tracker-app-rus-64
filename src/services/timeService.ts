@@ -7,12 +7,18 @@ export const timeService = {
     const response = await fetch(`${API_BASE_URL}/time/current-time`, {
       method: "GET",
       headers: {
-        "Authorization": token
-      }
+        "Authorization": token,
+      },
     });
-    
-    return handleResponse(response);
+
+    const result = await handleResponse(response);
+    // Если результат – объект с ключом currentTime, возвращаем его, иначе возвращаем результат как есть
+    if (result && typeof result === "object" && "currentTime" in result) {
+      return result.currentTime;
+    }
+    return result;
   },
+
 
   // Next day
   nextDay: async (token: string): Promise<string> => {
@@ -22,7 +28,7 @@ export const timeService = {
         "Authorization": token
       }
     });
-    
+
     return handleResponse(response);
   },
 
@@ -34,7 +40,7 @@ export const timeService = {
         "Authorization": token
       }
     });
-    
+
     return handleResponse(response);
   },
 };
