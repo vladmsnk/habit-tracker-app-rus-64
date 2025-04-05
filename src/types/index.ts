@@ -32,6 +32,7 @@ export interface Goal {
   frequency_type: FrequencyType;
   times_per_frequency: number;
   total_tracking_periods: number;
+  is_completed?: boolean;
 }
 
 export interface CreateHabitRequest {
@@ -57,12 +58,21 @@ export interface UpdateHabitRequest {
 }
 
 // Типы для прогресса
-export interface Progress {
+export interface ProgressData {
   total_completed_periods: number;
   total_completed_times: number;
   total_skipped_periods: number;
   most_longest_streak: number;
   current_streak: number;
+}
+
+export interface Progress {
+  goal?: Goal;
+  progress?: ProgressData;
+  habit?: {
+    id: number;
+    description: string;
+  };
 }
 
 // Тип для версии API

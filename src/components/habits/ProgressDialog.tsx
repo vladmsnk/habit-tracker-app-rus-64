@@ -38,27 +38,27 @@ const ProgressDialog: React.FC<ProgressDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        {progress ? (
+        {progress && progress.progress ? (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
                 <p className="text-xs text-muted-foreground">Всего выполнено периодов</p>
-                <p className="text-2xl font-bold text-primary">{progress.total_completed_periods}</p>
+                <p className="text-2xl font-bold text-primary">{progress.progress.total_completed_periods}</p>
                 <p className="text-xs text-muted-foreground">из {habit.goal.total_tracking_periods}</p>
               </div>
               <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
                 <p className="text-xs text-muted-foreground">Текущая серия</p>
-                <p className="text-2xl font-bold text-primary">{progress.current_streak}</p>
+                <p className="text-2xl font-bold text-primary">{progress.progress.current_streak}</p>
                 <p className="text-xs text-muted-foreground">периодов подряд</p>
               </div>
               <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
                 <p className="text-xs text-muted-foreground">Лучшая серия</p>
-                <p className="text-2xl font-bold text-primary">{progress.most_longest_streak}</p>
+                <p className="text-2xl font-bold text-primary">{progress.progress.most_longest_streak}</p>
                 <p className="text-xs text-muted-foreground">периодов подряд</p>
               </div>
               <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
                 <p className="text-xs text-muted-foreground">Пропущено периодов</p>
-                <p className="text-2xl font-bold text-primary">{progress.total_skipped_periods}</p>
+                <p className="text-2xl font-bold text-primary">{progress.progress.total_skipped_periods}</p>
                 <p className="text-xs text-muted-foreground">всего</p>
               </div>
             </div>

@@ -31,11 +31,13 @@ const HabitProgress: React.FC<HabitProgressProps> = ({
     return <p className="text-sm text-muted-foreground">Данные о прогрессе недоступны</p>;
   }
 
-  const { total_completed_periods } = progress;
-  const completionPercentage = Math.min(
-    Math.round((total_completed_periods / totalTrackingPeriods) * 100),
-    100
-  );
+  // Извлекаем значение total_completed_periods из объекта progress.progress
+  const total_completed_periods = progress.progress ? progress.progress.total_completed_periods : 0;
+  
+  // Безопасно вычисляем процент выполнения, проверяя все на валидность
+  const completionPercentage = totalTrackingPeriods && totalTrackingPeriods > 0
+    ? Math.min(Math.round((total_completed_periods / totalTrackingPeriods) * 100), 100)
+    : 0;
 
   return (
     <div className="space-y-3">
@@ -51,10 +53,10 @@ const HabitProgress: React.FC<HabitProgressProps> = ({
       </div>
       <div className="flex justify-between text-xs text-muted-foreground mt-1">
         <span>{total_completed_periods} из {totalTrackingPeriods} периодов</span>
-        {progress.current_streak > 0 && (
+        {progress.progress && progress.progress.current_streak > 0 && (
           <Badge variant="outline" className="flex items-center gap-1 bg-primary/10">
             <Trophy className="h-3 w-3 text-primary" />
-            <span className="font-medium">Серия: {progress.current_streak}</span>
+            <span className="font-medium">Серия: {progress.progress.current_streak}</span>
           </Badge>
         )}
       </div>
