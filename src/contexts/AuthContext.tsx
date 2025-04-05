@@ -2,7 +2,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { authService } from "@/services";
 import { AuthContextType, AuthState } from "@/types";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { showApiErrorToast } from "@/components/ui/api-error-toast";
 
 // Initial authentication state
 const initialAuthState: AuthState = {
@@ -61,11 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     } catch (error) {
       setAuth((prev) => ({ ...prev, loading: false }));
-      toast({
-        title: "Ошибка входа",
-        description: error instanceof Error ? error.message : "Неизвестная ошибка",
-        variant: "destructive",
-      });
+      showApiErrorToast(error);
       throw error;
     }
   };
@@ -82,11 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     } catch (error) {
       setAuth((prev) => ({ ...prev, loading: false }));
-      toast({
-        title: "Ошибка регистрации",
-        description: error instanceof Error ? error.message : "Неизвестная ошибка",
-        variant: "destructive",
-      });
+      showApiErrorToast(error);
       throw error;
     }
   };
@@ -100,6 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (error) {
       console.error("Logout error:", error);
+      showApiErrorToast(error);
     } finally {
       setAuth(initialAuthState);
       localStorage.removeItem('auth');

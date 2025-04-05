@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { habitService } from "@/services";
 import { Progress } from "@/types";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { showApiErrorToast } from "@/components/ui/api-error-toast";
 
 export const useProgress = (habitId: number) => {
   const [progress, setProgress] = useState<Progress | null>(null);
@@ -35,11 +36,7 @@ export const useProgress = (habitId: number) => {
           fetchProgress();
         }
       } else {
-        toast({
-          title: "Ошибка",
-          description: "Не удалось загрузить прогресс.",
-          variant: "destructive",
-        });
+        showApiErrorToast(error);
       }
     } finally {
       setLoading(false);
@@ -75,11 +72,7 @@ export const useProgress = (habitId: number) => {
         }
       }
       
-      toast({
-        title: "Ошибка",
-        description: "Не удалось добавить прогресс. Попробуйте снова.",
-        variant: "destructive",
-      });
+      showApiErrorToast(error);
       return false;
     }
   };

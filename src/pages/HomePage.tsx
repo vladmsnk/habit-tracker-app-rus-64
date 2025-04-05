@@ -79,12 +79,20 @@ const HomePage: React.FC = () => {
     getCurrentTime();
   };
 
+  // ActionLabel компонент для кнопки добавления привычки
+  const actionLabelComponent = (
+    <>
+      <Plus className="h-4 w-4 mr-2" />
+      Добавить привычку
+    </>
+  );
+
   return (
     <div className="space-y-6 animate-fade-in">
       <PageHeader 
         title="Мои привычки"
         description="Управляйте своими привычками и отслеживайте прогресс"
-        actionLabel={<><Plus className="h-4 w-4 mr-2" />Добавить привычку</>}
+        actionLabel={actionLabelComponent}
         onAction={() => setCreateDialogOpen(true)}
         currentTime={currentTime}
         loading={timeLoading}
@@ -98,7 +106,7 @@ const HomePage: React.FC = () => {
         <EmptyStateCard 
           title="У вас пока нет привычек"
           description="Создайте свою первую привычку, чтобы начать отслеживать прогресс"
-          actionLabel={<><Plus className="h-4 w-4 mr-2" />Добавить привычку</>}
+          actionLabel={actionLabelComponent}
           onAction={() => setCreateDialogOpen(true)}
         />
       ) : (

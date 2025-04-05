@@ -1,12 +1,12 @@
 
-import React from "react";
+import React, { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { Clock, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 interface PageHeaderProps {
   title: string;
   description: string;
-  actionLabel?: string;
+  actionLabel?: ReactNode;
   onAction?: () => void;
   currentTime?: string | null;
   loading?: boolean;
@@ -19,44 +19,33 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   actionLabel,
   onAction,
   currentTime,
-  loading = false,
-  onRefresh
+  loading,
+  onRefresh,
 }) => {
   return (
-    <div className="card-gradient-primary p-6 rounded-lg shadow-lg mb-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gradient">{title}</h1>
-          <p className="text-muted-foreground mt-1">{description}</p>
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{title}</h1>
+        <p className="text-muted-foreground mt-1">
+          {description}
           {currentTime && (
-            <div className="flex items-center text-sm text-primary mt-2">
-              <Clock className="h-4 w-4 mr-1" />
-              {loading ? "Загрузка..." : currentTime}
-            </div>
+            <span className="text-sm ml-2 opacity-70">
+              {loading ? "Загрузка времени..." : `Текущее время: ${currentTime}`}
+            </span>
           )}
-        </div>
-        <div className="flex gap-2 self-end sm:self-auto">
-          {onRefresh && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onRefresh}
-              disabled={loading}
-              className="glass-card border-primary/20"
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Обновить
-            </Button>
-          )}
-          {actionLabel && onAction && (
-            <Button 
-              onClick={onAction} 
-              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-            >
-              {actionLabel}
-            </Button>
-          )}
-        </div>
+        </p>
+      </div>
+      <div className="flex items-center space-x-2 sm:justify-self-end w-full sm:w-auto">
+        {onRefresh && (
+          <Button variant="outline" size="icon" onClick={onRefresh} className="shrink-0">
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+        )}
+        {actionLabel && onAction && (
+          <Button onClick={onAction} className="w-full sm:w-auto">
+            {actionLabel}
+          </Button>
+        )}
       </div>
     </div>
   );

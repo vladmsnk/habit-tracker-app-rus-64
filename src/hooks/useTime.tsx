@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { timeService } from "@/services";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { showApiErrorToast } from "@/components/ui/api-error-toast";
 
 export const useTime = () => {
   const [currentTime, setCurrentTime] = useState<string | null>(null);
@@ -34,6 +35,8 @@ export const useTime = () => {
         if (refreshed) {
           getCurrentTime();
         }
+      } else {
+        showApiErrorToast(error);
       }
     } finally {
       setLoading(false);
@@ -70,11 +73,7 @@ export const useTime = () => {
         }
       }
       
-      toast({
-        title: "Ошибка",
-        description: "Не удалось перейти на следующий день.",
-        variant: "destructive",
-      });
+      showApiErrorToast(error);
       return false;
     } finally {
       setLoading(false);
@@ -111,11 +110,7 @@ export const useTime = () => {
         }
       }
       
-      toast({
-        title: "Ошибка",
-        description: "Не удалось сбросить время.",
-        variant: "destructive",
-      });
+      showApiErrorToast(error);
       return false;
     } finally {
       setLoading(false);

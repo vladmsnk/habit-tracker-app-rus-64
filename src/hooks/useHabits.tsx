@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { habitService } from "@/services";
 import { Habit, CreateHabitRequest, UpdateHabitRequest } from "@/types";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { showApiErrorToast } from "@/components/ui/api-error-toast";
 
 export const useHabits = () => {
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -35,11 +36,7 @@ export const useHabits = () => {
           fetchHabits();
         }
       } else {
-        toast({
-          title: "Ошибка",
-          description: "Не удалось загрузить привычки.",
-          variant: "destructive",
-        });
+        showApiErrorToast(error);
       }
     } finally {
       setLoading(false);
@@ -70,11 +67,7 @@ export const useHabits = () => {
           fetchCompletedHabits();
         }
       } else {
-        toast({
-          title: "Ошибка",
-          description: "Не удалось загрузить завершенные привычки.",
-          variant: "destructive",
-        });
+        showApiErrorToast(error);
       }
     } finally {
       setLoading(false);
@@ -118,15 +111,13 @@ export const useHabits = () => {
             }
           } catch (e) {
             console.error("Повторная ошибка создания привычки:", e);
+            showApiErrorToast(e);
           }
         }
+      } else {
+        showApiErrorToast(error);
       }
       
-      toast({
-        title: "Ошибка",
-        description: "Не удалось создать привычку. Попробуйте снова.",
-        variant: "destructive",
-      });
       return false;
     }
   };
@@ -164,11 +155,7 @@ export const useHabits = () => {
         }
       }
       
-      toast({
-        title: "Ошибка",
-        description: "Не удалось обновить привычку. Попробуйте снова.",
-        variant: "destructive",
-      });
+      showApiErrorToast(error);
       return false;
     }
   };
@@ -206,11 +193,7 @@ export const useHabits = () => {
         }
       }
       
-      toast({
-        title: "Ошибка",
-        description: "Не удалось удалить привычку. Попробуйте снова.",
-        variant: "destructive",
-      });
+      showApiErrorToast(error);
       return false;
     }
   };
@@ -248,11 +231,7 @@ export const useHabits = () => {
         }
       }
       
-      toast({
-        title: "Ошибка",
-        description: "Не удалось добавить прогресс. Попробуйте снова.",
-        variant: "destructive",
-      });
+      showApiErrorToast(error);
       return false;
     }
   };
