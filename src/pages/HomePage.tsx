@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { habitService, timeService, mockData } from "@/services/api";
-import { CreateHabitRequest, Habit, HabitListResponse, UpdateHabitRequest } from "@/types";
+import { habitService, timeService } from "@/services/api";
+import { CreateHabitRequest, Habit, UpdateHabitRequest } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Plus, RefreshCw, Loader2, Clock } from "lucide-react";
 import HabitCard from "@/components/habits/HabitCard";
@@ -19,7 +19,7 @@ const HomePage: React.FC = () => {
   const [deleteHabitId, setDeleteHabitId] = useState<number | null>(null);
   const [currentTime, setCurrentTime] = useState<string | null>(null);
   const [timeLoading, setTimeLoading] = useState(false);
-  const { accessToken, refreshAuthToken } = useAuth();
+  const { accessToken, refreshAuthToken, isAuthenticated } = useAuth();
   const { toast } = useToast();
 
   // Загрузка привычек
@@ -27,8 +27,11 @@ const HomePage: React.FC = () => {
     setLoading(true);
     try {
       if (!accessToken) {
-        // Используем мок-данные, если нет токена (для демонстрации)
-        setHabits(mockData.habits);
+        toast({
+          title: "Ошибка авторизации",
+          description: "Пожалуйста, войдите в систему",
+          variant: "destructive",
+        });
         return;
       }
       
@@ -36,11 +39,9 @@ const HomePage: React.FC = () => {
       setHabits(result.habits || []);
     } catch (error) {
       console.error("Ошибка при получении привычек:", error);
-      // Используем мок-данные в случае ошибки
-      setHabits(mockData.habits);
       
       // Пробуем обновить токен, если причина в авторизации
-      if (error instanceof Error && error.message.includes("401")) {
+      if (error instanceof Error && (error as any).status === 401) {
         const refreshed = await refreshAuthToken();
         if (refreshed) {
           fetchHabits();
@@ -48,7 +49,7 @@ const HomePage: React.FC = () => {
       } else {
         toast({
           title: "Ошибка",
-          description: "Не удалось загрузить привычки. Используются демо-данные.",
+          description: "Не удалось загрузить привычки.",
           variant: "destructive",
         });
       }
@@ -62,7 +63,11 @@ const HomePage: React.FC = () => {
     setTimeLoading(true);
     try {
       if (!accessToken) {
-        setCurrentTime("Демо-режим");
+        toast({
+          title: "Ошибка авторизации",
+          description: "Пожалуйста, войдите в систему",
+          variant: "destructive",
+        });
         return;
       }
       
@@ -73,7 +78,7 @@ const HomePage: React.FC = () => {
       setCurrentTime("Недоступно");
       
       // Пробуем обновить токен, если причина в авторизации
-      if (error instanceof Error && error.message.includes("401")) {
+      if (error instanceof Error && (error as any).status === 401) {
         const refreshed = await refreshAuthToken();
         if (refreshed) {
           fetchCurrentTime();
@@ -84,16 +89,25 @@ const HomePage: React.FC = () => {
     }
   };
 
-  // Загрузка данных при монтировании компонента
+  // Загрузка данных при монтировании компонента или при авторизации
   useEffect(() => {
-    fetchHabits();
-    fetchCurrentTime();
-  }, [accessToken]);
+    if (accessToken) {
+      fetchHabits();
+      fetchCurrentTime();
+    }
+  }, [accessToken, isAuthenticated]);
 
   // Создание привычки
   const handleCreateHabit = async (habitData: CreateHabitRequest) => {
     try {
-      if (!accessToken) return;
+      if (!accessToken) {
+        toast({
+          title: "Ошибка авторизации",
+          description: "Пожалуйста, войдите в систему",
+          variant: "destructive",
+        });
+        return;
+      }
       
       await habitService.createHabit(habitData, accessToken);
       toast({
@@ -101,30 +115,51 @@ const HomePage: React.FC = () => {
         description: "Новая привычка успешно создана.",
       });
       fetchHabits();
+      setCreateDialogOpen(false);
     } catch (error) {
       console.error("Ошибка при создании привычки:", error);
+      
+      // Пробуем обновить токен, если причина в авторизации
+      if (error instanceof Error && (error as any).status === 401) {
+        const refreshed = await refreshAuthToken();
+        if (refreshed) {
+          // Повторно пытаемся создать привычку
+          try {
+            if (accessToken) {
+              await habitService.createHabit(habitData, accessToken);
+              toast({
+                title: "Привычка создана",
+                description: "Новая привычка успешно создана.",
+              });
+              fetchHabits();
+              setCreateDialogOpen(false);
+              return;
+            }
+          } catch (e) {
+            console.error("Повторная ошибка создания привычки:", e);
+          }
+        }
+      }
+      
       toast({
         title: "Ошибка",
         description: "Не удалось создать привычку. Попробуйте снова.",
         variant: "destructive",
       });
-      
-      // Пробуем обновить токен, если причина в авторизации
-      if (error instanceof Error && error.message.includes("401")) {
-        const refreshed = await refreshAuthToken();
-        if (refreshed) {
-          setCreateDialogOpen(true); // Повторно открываем диалог
-        }
-      }
-      
-      throw error;
     }
   };
 
   // Обновление привычки
   const handleUpdateHabit = async (habitData: CreateHabitRequest) => {
     try {
-      if (!accessToken || !editHabitData) return;
+      if (!accessToken || !editHabitData) {
+        toast({
+          title: "Ошибка авторизации",
+          description: "Пожалуйста, войдите в систему",
+          variant: "destructive",
+        });
+        return;
+      }
       
       const updateData: UpdateHabitRequest = {
         ...habitData,
@@ -140,28 +175,39 @@ const HomePage: React.FC = () => {
       setEditHabitData(undefined);
     } catch (error) {
       console.error("Ошибка при обновлении привычки:", error);
+      
+      // Пробуем обновить токен, если причина в авторизации
+      if (error instanceof Error && (error as any).status === 401) {
+        const refreshed = await refreshAuthToken();
+        if (refreshed && editHabitData) {
+          // Сохраняем данные редактируемой привычки, но не пытаемся автоматически обновить
+          toast({
+            title: "Требуется повторная попытка",
+            description: "Пожалуйста, попробуйте сохранить изменения еще раз.",
+          });
+          return;
+        }
+      }
+      
       toast({
         title: "Ошибка",
         description: "Не удалось обновить привычку. Попробуйте снова.",
         variant: "destructive",
       });
-      
-      // Пробуем обновить токен, если причина в авторизации
-      if (error instanceof Error && error.message.includes("401")) {
-        const refreshed = await refreshAuthToken();
-        if (refreshed && editHabitData) {
-          setEditHabitData(editHabitData);
-        }
-      }
-      
-      throw error;
     }
   };
 
   // Удаление привычки
   const handleDeleteHabit = async () => {
     try {
-      if (!accessToken || !deleteHabitId) return;
+      if (!accessToken || !deleteHabitId) {
+        toast({
+          title: "Ошибка авторизации",
+          description: "Пожалуйста, войдите в систему",
+          variant: "destructive",
+        });
+        return;
+      }
       
       await habitService.deleteHabit(deleteHabitId, accessToken);
       toast({
@@ -169,21 +215,70 @@ const HomePage: React.FC = () => {
         description: "Привычка успешно удалена.",
       });
       fetchHabits();
+      setDeleteHabitId(null);
     } catch (error) {
       console.error("Ошибка при удалении привычки:", error);
+      
+      // Пробуем обновить токен, если причина в авторизации
+      if (error instanceof Error && (error as any).status === 401) {
+        const refreshed = await refreshAuthToken();
+        if (refreshed && deleteHabitId) {
+          // Сохраняем ID удаляемой привычки, но не пытаемся автоматически удалить
+          toast({
+            title: "Требуется повторная попытка",
+            description: "Пожалуйста, попробуйте удалить привычку еще раз.",
+          });
+          return;
+        }
+      }
+      
       toast({
         title: "Ошибка",
         description: "Не удалось удалить привычку. Попробуйте снова.",
         variant: "destructive",
       });
+    }
+  };
+
+  // Обработчик отметки прогресса
+  const handleAddProgress = async (habitId: number) => {
+    try {
+      if (!accessToken) {
+        toast({
+          title: "Ошибка авторизации",
+          description: "Пожалуйста, войдите в систему",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      await habitService.addProgress(habitId, accessToken);
+      toast({
+        title: "Прогресс добавлен",
+        description: "Прогресс успешно отмечен.",
+      });
+      fetchHabits();
+    } catch (error) {
+      console.error("Ошибка при добавлении прогресса:", error);
       
       // Пробуем обновить токен, если причина в авторизации
-      if (error instanceof Error && error.message.includes("401")) {
+      if (error instanceof Error && (error as any).status === 401) {
         const refreshed = await refreshAuthToken();
-        if (refreshed && deleteHabitId) {
-          setDeleteHabitId(deleteHabitId);
+        if (refreshed) {
+          // Не пытаемся автоматически повторить, а просто уведомляем
+          toast({
+            title: "Требуется повторная попытка",
+            description: "Пожалуйста, попробуйте отметить прогресс еще раз.",
+          });
+          return;
         }
       }
+      
+      toast({
+        title: "Ошибка",
+        description: "Не удалось добавить прогресс. Попробуйте снова.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -265,7 +360,7 @@ const HomePage: React.FC = () => {
               habit={habit}
               onEdit={(habit) => setEditHabitData(habit)}
               onDelete={(habitId) => setDeleteHabitId(habitId)}
-              onAddProgress={fetchHabits}
+              onAddProgress={handleAddProgress}
             />
           ))}
         </div>

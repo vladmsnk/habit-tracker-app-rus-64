@@ -20,7 +20,11 @@ const TimeControlPage: React.FC = () => {
     setLoading(true);
     try {
       if (!accessToken) {
-        setCurrentTime("Демо-режим");
+        toast({
+          title: "Ошибка авторизации",
+          description: "Пожалуйста, войдите в систему",
+          variant: "destructive",
+        });
         return;
       }
       
@@ -31,7 +35,7 @@ const TimeControlPage: React.FC = () => {
       setCurrentTime("Недоступно");
       
       // Пробуем обновить токен, если причина в авторизации
-      if (error instanceof Error && error.message.includes("401")) {
+      if (error instanceof Error && (error as any).status === 401) {
         const refreshed = await refreshAuthToken();
         if (refreshed) {
           fetchCurrentTime();
@@ -52,7 +56,14 @@ const TimeControlPage: React.FC = () => {
   const handleNextDay = async () => {
     setLoading(true);
     try {
-      if (!accessToken) return;
+      if (!accessToken) {
+        toast({
+          title: "Ошибка авторизации",
+          description: "Пожалуйста, войдите в систему",
+          variant: "destructive",
+        });
+        return;
+      }
       
       await timeService.nextDay(accessToken);
       toast({
@@ -62,18 +73,19 @@ const TimeControlPage: React.FC = () => {
       fetchCurrentTime();
     } catch (error) {
       console.error("Ошибка при переходе к следующему дню:", error);
-      toast({
-        title: "Ошибка",
-        description: "Не удалось перейти к следующему дню.",
-        variant: "destructive",
-      });
       
       // Пробуем обновить токен, если причина в авторизации
-      if (error instanceof Error && error.message.includes("401")) {
+      if (error instanceof Error && (error as any).status === 401) {
         const refreshed = await refreshAuthToken();
         if (refreshed) {
           handleNextDay();
         }
+      } else {
+        toast({
+          title: "Ошибка",
+          description: "Не удалось перейти к следующему дню.",
+          variant: "destructive",
+        });
       }
     } finally {
       setLoading(false);
@@ -84,7 +96,14 @@ const TimeControlPage: React.FC = () => {
   const handleResetTime = async () => {
     setLoading(true);
     try {
-      if (!accessToken) return;
+      if (!accessToken) {
+        toast({
+          title: "Ошибка авторизации",
+          description: "Пожалуйста, войдите в систему",
+          variant: "destructive",
+        });
+        return;
+      }
       
       await timeService.resetTime(accessToken);
       toast({
@@ -94,18 +113,19 @@ const TimeControlPage: React.FC = () => {
       fetchCurrentTime();
     } catch (error) {
       console.error("Ошибка при сбросе времени:", error);
-      toast({
-        title: "Ошибка",
-        description: "Не удалось сбросить время.",
-        variant: "destructive",
-      });
       
       // Пробуем обновить токен, если причина в авторизации
-      if (error instanceof Error && error.message.includes("401")) {
+      if (error instanceof Error && (error as any).status === 401) {
         const refreshed = await refreshAuthToken();
         if (refreshed) {
           handleResetTime();
         }
+      } else {
+        toast({
+          title: "Ошибка",
+          description: "Не удалось сбросить время.",
+          variant: "destructive",
+        });
       }
     } finally {
       setLoading(false);
@@ -113,7 +133,9 @@ const TimeControlPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchCurrentTime();
+    if (accessToken) {
+      fetchCurrentTime();
+    }
   }, [accessToken]);
 
   return (

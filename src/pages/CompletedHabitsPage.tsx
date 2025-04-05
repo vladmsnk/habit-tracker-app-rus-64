@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { habitService, mockData } from "@/services/api";
+import { habitService } from "@/services/api";
 import { Habit } from "@/types";
 import { RefreshCw, Trophy, CalendarCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,11 @@ const CompletedHabitsPage: React.FC = () => {
     setLoading(true);
     try {
       if (!accessToken) {
-        // Используем мок-данные, если нет токена (для демонстрации)
-        setCompletedHabits(mockData.completedHabits);
+        toast({
+          title: "Ошибка авторизации",
+          description: "Пожалуйста, войдите в систему",
+          variant: "destructive",
+        });
         return;
       }
       
@@ -29,11 +32,9 @@ const CompletedHabitsPage: React.FC = () => {
       setCompletedHabits(result.habits || []);
     } catch (error) {
       console.error("Ошибка при получении завершенных привычек:", error);
-      // Используем мок-данные в случае ошибки
-      setCompletedHabits(mockData.completedHabits);
       
       // Пробуем обновить токен, если причина в авторизации
-      if (error instanceof Error && error.message.includes("401")) {
+      if (error instanceof Error && (error as any).status === 401) {
         const refreshed = await refreshAuthToken();
         if (refreshed) {
           fetchCompletedHabits();
@@ -41,7 +42,7 @@ const CompletedHabitsPage: React.FC = () => {
       } else {
         toast({
           title: "Ошибка",
-          description: "Не удалось загрузить завершенные привычки. Используются демо-данные.",
+          description: "Не удалось загрузить завершенные привычки.",
           variant: "destructive",
         });
       }
@@ -51,7 +52,9 @@ const CompletedHabitsPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchCompletedHabits();
+    if (accessToken) {
+      fetchCompletedHabits();
+    }
   }, [accessToken]);
 
   // Функция для форматирования типа частоты

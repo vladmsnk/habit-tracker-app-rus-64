@@ -4,13 +4,13 @@ import { authService } from "@/services/api";
 import { AuthContextType, AuthState } from "@/types";
 import { useToast } from "@/components/ui/use-toast";
 
-// Начальное состояние аутентификации для режима с моками
+// Начальное состояние аутентификации
 const initialAuthState: AuthState = {
-  isAuthenticated: true, // Всегда авторизованы для тестирования
-  user: "Пользователь",
+  isAuthenticated: false,
+  user: null,
   loading: false,
-  accessToken: "mock_token_123",
-  refreshToken: "mock_refresh_token_123",
+  accessToken: null,
+  refreshToken: null,
 };
 
 // Создание контекста
@@ -18,8 +18,30 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Провайдер контекста
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [auth, setAuth] = useState<AuthState>(initialAuthState);
+  const [auth, setAuth] = useState<AuthState>(() => {
+    // Проверяем локальное хранилище для сохраненных токенов
+    const savedAuth = localStorage.getItem('auth');
+    if (savedAuth) {
+      try {
+        const parsedAuth = JSON.parse(savedAuth) as AuthState;
+        return parsedAuth;
+      } catch (error) {
+        console.error("Ошибка при восстановлении сессии:", error);
+      }
+    }
+    return initialAuthState;
+  });
+  
   const { toast } = useToast();
+
+  // Сохраняем состояние аутентификации в локальное хранилище
+  useEffect(() => {
+    if (auth.isAuthenticated && auth.accessToken && auth.refreshToken) {
+      localStorage.setItem('auth', JSON.stringify(auth));
+    } else if (!auth.isAuthenticated) {
+      localStorage.removeItem('auth');
+    }
+  }, [auth]);
 
   // Авторизация пользователя
   const login = async (username: string, password: string) => {
@@ -79,15 +101,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error("Ошибка при выходе:", error);
     } finally {
-      // Для демонстрации - возвращаемся в авторизованное состояние через 1 секунду
-      setTimeout(() => {
-        setAuth(initialAuthState);
-        toast({
-          title: "Демо-режим",
-          description: "В демо-режиме вы автоматически авторизованы.",
-        });
-      }, 1000);
-      
+      setAuth(initialAuthState);
+      localStorage.removeItem('auth');
       toast({
         title: "Выход из системы",
         description: "Вы успешно вышли из системы.",
@@ -114,14 +129,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return true;
     } catch (error) {
       console.error("Ошибка при обновлении токена:", error);
-      // В демо-режиме не выходим из системы при ошибке обновления токена
-      setAuth((prev) => ({
-        ...prev,
-        loading: false,
-      }));
+      // При ошибке обновления токена выходим из системы
+      setAuth(initialAuthState);
+      localStorage.removeItem('auth');
       toast({
-        title: "Ошибка обновления сессии",
-        description: "Используется демо-режим.",
+        title: "Сессия истекла",
+        description: "Пожалуйста, войдите снова.",
         variant: "destructive",
       });
       return false;
