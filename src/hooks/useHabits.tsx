@@ -36,7 +36,7 @@ export const useHabits = () => {
           fetchHabits();
         }
       } else {
-        showApiErrorToast(error);
+        showApiErrorToast(error, "Ошибка при получении привычек");
       }
     } finally {
       setLoading(false);
@@ -67,7 +67,7 @@ export const useHabits = () => {
           fetchCompletedHabits();
         }
       } else {
-        showApiErrorToast(error);
+        showApiErrorToast(error, "Ошибка при получении завершенных привычек");
       }
     } finally {
       setLoading(false);
@@ -111,11 +111,11 @@ export const useHabits = () => {
             }
           } catch (e) {
             console.error("Повторная ошибка создания привычки:", e);
-            showApiErrorToast(e);
+            showApiErrorToast(e, "Ошибка при создании привычки (после обновления токена)");
           }
         }
       } else {
-        showApiErrorToast(error);
+        showApiErrorToast(error, "Ошибка при создании привычки");
       }
       
       return false;
@@ -155,7 +155,7 @@ export const useHabits = () => {
         }
       }
       
-      showApiErrorToast(error);
+      showApiErrorToast(error, "Ошибка при обновлении привычки");
       return false;
     }
   };
@@ -193,7 +193,7 @@ export const useHabits = () => {
         }
       }
       
-      showApiErrorToast(error);
+      showApiErrorToast(error, "Ошибка при удалении привычки");
       return false;
     }
   };
@@ -231,7 +231,7 @@ export const useHabits = () => {
         }
       }
       
-      showApiErrorToast(error);
+      showApiErrorToast(error, "Ошибка при добавлении прогресса");
       return false;
     }
   };

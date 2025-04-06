@@ -37,7 +37,7 @@ export const useProgress = (habitId: number) => {
           fetchProgress();
         }
       } else {
-        showApiErrorToast(error);
+        showApiErrorToast(error, `Ошибка при получении прогресса для привычки ${habitId}`);
       }
     } finally {
       setLoading(false);
@@ -73,7 +73,7 @@ export const useProgress = (habitId: number) => {
         }
       }
       
-      showApiErrorToast(error);
+      showApiErrorToast(error, `Ошибка при добавлении прогресса для привычки ${habitId}`);
       return false;
     }
   };

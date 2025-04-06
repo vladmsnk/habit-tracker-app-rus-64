@@ -36,7 +36,7 @@ export const useTime = () => {
           getCurrentTime();
         }
       } else {
-        showApiErrorToast(error);
+        showApiErrorToast(error, "Ошибка при получении текущего времени");
       }
     } finally {
       setLoading(false);
@@ -73,7 +73,7 @@ export const useTime = () => {
         }
       }
       
-      showApiErrorToast(error);
+      showApiErrorToast(error, "Ошибка при переходе на следующий день");
       return false;
     } finally {
       setLoading(false);
@@ -110,7 +110,7 @@ export const useTime = () => {
         }
       }
       
-      showApiErrorToast(error);
+      showApiErrorToast(error, "Ошибка при сбросе времени");
       return false;
     } finally {
       setLoading(false);

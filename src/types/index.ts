@@ -1,4 +1,3 @@
-
 // Типы для аутентификации
 export interface LoginRequest {
   username: string;
@@ -78,6 +77,28 @@ export interface Progress {
 // Тип для версии API
 export interface VersionResponse {
   version: string;
+}
+
+// Типы для обработки ошибок
+export interface ApiErrorDetails {
+  method?: string;
+  url?: string;
+  status?: number;
+  statusText?: string;
+  errorCode?: string;
+  message: string;
+  timestamp?: string;
+  originalError?: unknown;
+  responseBody?: string;
+}
+
+export interface ApiErrorResponse {
+  error?: string;
+  message?: string;
+  status?: number;
+  path?: string;
+  timestamp?: string;
+  details?: Record<string, any>;
 }
 
 // Типы для контекста аутентификации

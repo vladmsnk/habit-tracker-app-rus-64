@@ -4,10 +4,11 @@ import { VersionResponse } from "@/types";
 
 export const versionService = {
   getVersion: async (): Promise<VersionResponse> => {
-    const response = await fetch(`${API_BASE_URL}/version`, {
+    const url = `${API_BASE_URL}/version`;
+    const response = await fetch(url, {
       method: "GET"
     });
     
-    return handleResponse(response);
+    return handleResponse(response, { method: "GET", url });
   },
 };
