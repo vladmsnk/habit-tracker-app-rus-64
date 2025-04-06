@@ -37,12 +37,10 @@ export class ApiErrorHandler {
               if (jsonData.error || jsonData.message) {
                 errorDetails.message = jsonData.error || jsonData.message || errorDetails.message;
                 errorDetails.errorCode = typeof jsonData.status === 'string' ? jsonData.status : undefined;
-                if (jsonData.details) {
-                  errorDetails.originalError = jsonData.details;
-                }
               }
             } catch {
               // Если не удалось распарсить как JSON, используем текст как есть
+              errorDetails.message = responseBody;
             }
           } catch {
             // Игнорируем ошибки при получении тела ответа
@@ -66,14 +64,13 @@ export class ApiErrorHandler {
       } else if (typeof error === 'string') {
         // Если ошибка - просто строка
         errorDetails.message = error;
+        errorDetails.responseBody = error;
         
         // Пытаемся распарсить JSON строку
         try {
           const jsonData = JSON.parse(error) as ApiErrorResponse;
           if (jsonData.error || jsonData.message) {
             errorDetails.message = jsonData.error || jsonData.message || error;
-            errorDetails.responseBody = error;
-            errorDetails.originalError = jsonData;
           }
         } catch {
           // Если не удалось распарсить как JSON, используем текст как есть
@@ -166,37 +163,8 @@ export class ApiErrorHandler {
   
   static getErrorTitle(error: ApiErrorDetails): string {
     if (error.status) {
-      return `${this.getStatusText(error.status)} (${error.status})`;
+      return `${this.getStatusText(error.status)}`;
     }
     return 'Ошибка';
-  }
-  
-  static getFullErrorDescription(error: ApiErrorDetails): string {
-    const parts: string[] = [];
-    
-    // Если есть метод и URL, формируем информацию о запросе
-    if (error.method && error.url) {
-      parts.push(`Метод: ${error.method} ${error.url}`);
-    }
-    
-    // Если есть статус, добавляем его
-    if (error.status) {
-      parts.push(`Статус: ${error.status} ${this.getStatusText(error.status)}`);
-    }
-    
-    // Добавляем сообщение об ошибке
-    parts.push(`Сообщение: ${error.message}`);
-    
-    // Если есть тело ответа, добавляем его
-    if (error.responseBody) {
-      parts.push(`Ответ: ${error.responseBody}`);
-    }
-    
-    // Добавляем время возникновения ошибки
-    if (error.timestamp) {
-      parts.push(`Время: ${new Date(error.timestamp).toLocaleString()}`);
-    }
-    
-    return parts.join('\n');
   }
 }
