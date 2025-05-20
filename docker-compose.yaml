@@ -9,4 +9,3 @@ services:
     environment:
       - VITE_API_URL=http://91.142.72.17:7001/api/v1
     restart: unless-stopped
-    network_mode: "host"
